@@ -36,26 +36,46 @@ void printList(const CarNode *head){
 
 }
 
+int hasLessMileage(const Car*a , const Car*b ){
+
+  if(a ->mileage < b -> mileage){
+
+    return 1;
+  }
+  else{
+
+    return 0;
+  }
+}
 
 
 
-void push(CarNode* head, Car * input, int (*func)(const Car*,const Car*)){
+int push(CarNode* head, Car * input,int(*compar)(const Car*,const Car*)){
 
-  if(head -> data ==NULL){
+  if(head -> data ==NULL&& head->next ==NULL){
+
+
 
     head ->data = input;
-    return;
+    return -1;
   }
 
+
   while(head->next !=NULL){
-    if((*func)(input,head->next->data)){
+
+    if(compar(input,head->next->data )){
+
       CarNode * temp = (CarNode*)malloc(sizeof(CarNode));
       temp->data = input;
-
       temp->next = head->next;
       head->next = temp;
       
+
+
+      return -1;
     }
+
+    
     head = head-> next;
   }
 
@@ -63,17 +83,8 @@ void push(CarNode* head, Car * input, int (*func)(const Car*,const Car*)){
   head -> next = add;
   head -> next-> data =input;
   head -> next ->next = NULL;
-}
 
-int hasLessMileage(const Car * a, const Car * b){
-
-  if(a->mileage < b->mileage){
-
-    return 1;
-  }
-  else{
-    return 0;
-  }
+  return -1;
 }
 
 void freeBoth(CarNode *head){
@@ -103,32 +114,34 @@ void freeAllCarNodes(CarNode * head){
 
 int main(void){
 
-  int (*mileageptr)( const Car*,const Car*);
-  mileageptr = &hasLessMileage;
-
+  int (*mileagefunc)(const Car*,const Car*);
+  mileagefunc = &hasLessMileage;
+  
   CarNode * headtest = (CarNode*)malloc(sizeof(CarNode));
+
+  headtest->data = NULL;
+  headtest->next = NULL;
 
 
 Car * data1 = (Car*)malloc(sizeof(Car));
 Car * data2 = (Car*)malloc(sizeof(Car));
 Car * data3 = (Car*)malloc(sizeof(Car));
+Car * data4 = (Car*)malloc(sizeof(Car));
   
   data1->mileage = 8;
   data2->mileage = 7;
   data3->mileage =5;
+  data4 ->mileage = 10;
 
 
 
-  push(headtest,data1,mileageptr);
-  push(headtest,data2,mileageptr);
-  push(headtest,data3,mileageptr);
-
-  int sum = (*mileageptr)(headtest->data,headtest->next->data);
-
-  printf("sum: %d",sum);
+  push(headtest,data1,mileagefunc);
+  push(headtest,data2,mileagefunc);
+  push(headtest,data3,mileagefunc);
+  push(headtest,data4,mileagefunc);
 
 
-  printList(headtest);  
+printList(headtest);  
 
   freeAllCarNodes(headtest);
  
