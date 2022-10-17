@@ -38,7 +38,8 @@ void printList(const CarNode *head){
 
 
 
-void push(CarNode* head, Car * input){
+
+void push(CarNode* head, Car * input, int (*func)(const Car*,const Car*)){
 
   if(head -> data ==NULL){
 
@@ -47,6 +48,14 @@ void push(CarNode* head, Car * input){
   }
 
   while(head->next !=NULL){
+    if((*func)(input,head->next->data)){
+      CarNode * temp = (CarNode*)malloc(sizeof(CarNode));
+      temp->data = input;
+
+      temp->next = head->next;
+      head->next = temp;
+      
+    }
     head = head-> next;
   }
 
@@ -54,6 +63,17 @@ void push(CarNode* head, Car * input){
   head -> next = add;
   head -> next-> data =input;
   head -> next ->next = NULL;
+}
+
+int hasLessMileage(const Car * a, const Car * b){
+
+  if(a->mileage < b->mileage){
+
+    return 1;
+  }
+  else{
+    return 0;
+  }
 }
 
 void freeBoth(CarNode *head){
@@ -82,7 +102,10 @@ void freeAllCarNodes(CarNode * head){
 }
 
 int main(void){
-  
+
+  int (*mileageptr)( const Car*,const Car*);
+  mileageptr = &hasLessMileage;
+
   CarNode * headtest = (CarNode*)malloc(sizeof(CarNode));
 
 
@@ -96,12 +119,16 @@ Car * data3 = (Car*)malloc(sizeof(Car));
 
 
 
-  push(headtest,data1);
-  push(headtest,data2);
-  push(headtest,data3);
+  push(headtest,data1,mileageptr);
+  push(headtest,data2,mileageptr);
+  push(headtest,data3,mileageptr);
+
+  int sum = (*mileageptr)(headtest->data,headtest->next->data);
+
+  printf("sum: %d",sum);
 
 
-printList(headtest);  
+  printList(headtest);  
 
   freeAllCarNodes(headtest);
  
